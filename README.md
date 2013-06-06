@@ -31,7 +31,7 @@ Nice effects to implement:
 * smoke
 * plasma
 * fire
-* for
+* fog
 * rain
 * snow
 
