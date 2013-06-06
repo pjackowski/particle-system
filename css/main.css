@@ -1,0 +1,25 @@
+/* Prevent from selecting canvas in Chrome:
+   http://stackoverflow.com/questions/1568806/how-do-i-prevent-text-and-or-page-content-double-click-highlighting-in-html-and */
+* {
+     -moz-user-select: none;
+     -khtml-user-select: none;
+     user-select: none;
+}
+
+body {
+}
+
+canvas {
+    border: 1px black solid;
+    margin: 30px;
+    cursor: crosshair;
+}
+
+button {
+    display: block;
+}
+
+.ninja {
+    display: none;
+    visibility: hidden;
+}
