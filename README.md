@@ -36,4 +36,3 @@ Nice effects to implement:
 * snow
 
 Memory leek should be fixed. Objects once deleted still referring to DOM canvas, so they might not be collected by GC.
-
