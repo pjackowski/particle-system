@@ -4,7 +4,11 @@ $(document).ready(function() {
     if(Modernizr.canvas && Modernizr.canvastext) {
 
         //all features supported, good!
-        var simulation = new Simulation({
+        //load defaults and start simulation
+
+        var config = new Config();
+
+        var simulation = new Simulation(config, {
             canvas: '#canvas'
         });
 

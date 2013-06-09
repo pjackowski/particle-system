@@ -1,14 +1,19 @@
-function Particle(parameters) {
+function Particle(config, parameters) {
+
+    this.config = config;
+    var cfg = this.config.particle;
 
     //setup default values
-    this.p = null;                              //position
-    this.ttl = 100;                             //time to live
+    this.p = new Vector(0, 0);                  //position
+    this.ttl = cfg.ttl;                         //time to live
     this.v = new Vector(0, 0);                  //current velocity
     this.dV = new Vector(0, 0);                 //velocity delta
     this.force = new Vector(0, 0);              //initial force
-    this.radius = 5;                            //radius of circle (1..10)
-    this.mass = this.radius * 10;               //mass
-    this.color = '';                            //color
+    this.radius = cfg.radius;                   //radius of circle
+    this.mass = this.radius * cfg.massRatio;    //mass
+    this.strokeStyle = cfg.strokeStyle;         //stroke color
+    this.fillStyle = cfg.fillStyle;             //fill color
+    this.lineWidth = cfg.lineWidth;             //line width of circle
     this.emitter = null;                        //reference to parent
     this.context = null;                        //2D context
 
@@ -32,10 +37,10 @@ Particle.prototype.draw = function() {
 
     this.context.beginPath();
     this.context.arc(this.p.x, this.p.y, this.radius, 0, 2 * Math.PI, false);
-    this.context.fillStyle = '#FFFFFF';
+    this.context.fillStyle = this.fillStyle;
     this.context.fill();
-    this.context.lineWidth = 1;
-    this.context.strokeStyle = this.color;
+    this.context.lineWidth = this.lineWidth;
+    this.context.strokeStyle = this.strokeStyle;
     this.context.stroke();
 
 };
@@ -60,11 +65,12 @@ Particle.prototype.applyGravity = function() {
 
     //compute gravity
 
-    var G = 6.6742867;
-    var MASS = 1000000;
+    var G = this.config.G;
+    var MASS = this.config.MASS;
 
     //mass center is under emitter, far away
-    var massCenter = new Vector(this.emitter.p.x, this.emitter.p.y + 10000);
+    var massCenter = new Vector(this.emitter.p.x, this.emitter.p.y);
+    massCenter = massCenter.addVector(this.config.massPositionOffset);
 
     var direction = massCenter.subVector(this.p);
     var distance = direction.getLength();
@@ -94,14 +100,20 @@ Particle.prototype.action = function() {
     //apply friction (1.0 - no friction)
     //add delta V and update position
     this.v = this.v.addVector(this.dV);
-    this.v = this.v.getMultiplied(1.0);
+    this.v = this.v.getMultiplied(this.config.friction);
     this.dV = new Vector(0, 0);
 
     this.p = this.p.addVector(this.v);
 
+    return this.kill();
+
+};
+
+Particle.prototype.kill = function() {
 
     //kill particle if ttl expired
-    //decreasing opacity would give better effect
+    //technically objects are marked for reuse
+
     if(this.ttl > 0) {
 
         this.ttl--;
@@ -114,7 +126,7 @@ Particle.prototype.action = function() {
         return false;
     }
 
-};
+}
 
 Particle.prototype.destroy = function() {
 

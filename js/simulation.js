@@ -1,6 +1,8 @@
-function Simulation(parameters) {
+function Simulation(config, parameters) {
 
     var that = this;
+
+    this.config = config;
 
     //setup default values
     this.canvas = '';           //canvas jQuery selector
@@ -18,7 +20,6 @@ function Simulation(parameters) {
 
         this.context = $(this.canvas)[0].getContext("2d");
 
-
     } catch(TypeError)
 
     {
@@ -30,7 +31,6 @@ function Simulation(parameters) {
 
     //newest emitter
     var emitter = null;
-
 
     //setup mouse handlers
 
@@ -44,7 +44,7 @@ function Simulation(parameters) {
 
         that.deleteEmitters();
 
-        emitter = new Emitter({
+        emitter = new Emitter(that.config, {
             p: new Vector(pointer.x, pointer.y),
             force: new Vector(pointer.x, pointer.y),
             context: that.context
@@ -163,9 +163,7 @@ Simulation.prototype.save = function() {
 
             whitelist.push({
                 p: em.p,
-                force: em.force,
-                speed: em.speed,
-                randomness: em.randomness
+                force: em.force
             });
 
         }
@@ -204,11 +202,9 @@ Simulation.prototype.load = function() {
             for(var i = 0; i < emitters.length; i++) {
 
                 this.emitters.push(
-                    new Emitter({
+                    new Emitter(this.config, {
                         p: new Vector(emitters[i].p.x, emitters[i].p.y),
                         force: new Vector(emitters[i].force.x, emitters[i].force.y),
-                        speed: emitters[i].speed,
-                        randomness: emitters[i].randomness,
                         context: this.context
                     })
                 );
@@ -263,8 +259,8 @@ Simulation.prototype.draw = function() {
 
     //draw statistics
 
-    this.context.fillStyle = '#000000';
-    this.context.font = '12px sans-serif';
+    this.context.fillStyle = this.config.fillStyle;
+    this.context.font = this.config.font;
     this.context.textBaseline = 'top';
     this.context.fillText('Particles: ' + Particle.instances.length, 6, 6);
 
